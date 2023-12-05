@@ -47,7 +47,6 @@ img_no = readdir(NOPATH)[1:10]
         epochs = 1:length(train_log)
         train_accs = getindex.(train_log, :train_acc)
         test_accs = getindex.(train_log, :test_acc)
-        @show train_log
         log_str = string(join(map(x -> "Epoch $(x.epoch): Train acc: $(x.train_acc), Test acc: $(x.test_acc)", train_log), "<br>")...)
         @save "public/plotdata.jld2" epochs train_accs test_accs
         @save "public/model.jld2" model
@@ -67,8 +66,6 @@ img_no = readdir(NOPATH)[1:10]
         label = classify(model, img)[1] ? "Tumor" : "No tumor"
         ground_truth = occursin("yes",clicked_img) ? "Tumor" : "No tumor"
         classification_error = label != ground_truth
-        @show classify(model, img)[1],classify(model, img)
-        #= grayscale = map(x -> float(getfield(x,:b)), img) # all channels have the same value =#
         image_layers = get_layer_outputs(model, img)
         L = 10
         frames = zeros(RGB{N0f8},IMAGE_SIZE[1],IMAGE_SIZE[2],L)
