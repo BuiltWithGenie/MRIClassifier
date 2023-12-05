@@ -164,5 +164,5 @@ function ui()
    ]
 end
 
-@page("/", ui)
+@page("/", "app.jl.html")
       end

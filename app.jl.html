@@ -1,0 +1,72 @@
+<h1 class="my-4 text-center">Brain tumor classifier</h1>
+<h2>Training</h2>
+<div class="row">
+    <div id="i0bup">
+        <q-card>
+            <h4>Results</h4>
+            <plotly :displaylogo="false" id="i988s" :data="trace" :layout="layout"></plotly>
+            <p>Training accuracy: {{train_acc}}</p>
+            <p>Test accuracy: {{test_acc}}</p>
+        </q-card>
+        <q-card id="iuome">
+            <q-btn v-on:click="training = true" id="igzjd" color="primary" :loading="training" label="Train model" icon="run_circle"></q-btn>
+            <q-btn id="i0lyu" class="q-ml-md" color="primary" label="Download model" href="/model.jld2" icon="arrow_downward"></q-btn>
+            <q-btn id="if4ib" class="q-ml-md" color="primary" label="Download data" href="/archive.zip" icon="arrow_downward"></q-btn>
+        </q-card>
+        <q-card>
+            <q-expansion-item expand-separator="" label="Training log" dense="" header-class="bg-grey-1" dense-toggle="">
+                <p>{{log_str}}</p>
+            </q-expansion-item>
+        </q-card>
+    </div>
+    <q-card id="iw6tf">
+        <h4>Detecting tumors in an MRI scan</h4>
+        <p>This app trains a convolutional neural network on a dataset of MRI brain scans to detect tumors. The training data consists of 253 images of brains with tumors and 98 images of brains without tumors.</p>
+        <p>To train the network, click the TRAIN button. This button only works when running the app locally in development mode.</p>
+        <p>To test the trained classifier, click one of the images below. You'll see the output of each layer of the network as the image is processed. The final layer output is used to classify the image as having a tumor or not.</p>
+        <h4>Network diagram</h4><img src="/diagram.png" id="i0wbg">
+        <p>This diagram excludes pooling and normalization layers</p>
+    </q-card>
+</div>
+<div id="i0jn"></div>
+<h2>Testing</h2>
+<div id="iq6du">
+    <div id="i7jkc">
+        <q-card>
+            <h4>Images with tumor</h4>
+            <q-scroll-area id="iom6h">
+                <div id="i1kll">
+                    <q-card v-for="img in img_yes" id="ivnan">
+                        <q-img v-on:click="clicked_img = '/yes/'+img" id="ivfi3" src="'/yes/'+img"></q-img>
+                    </q-card>
+                </div>
+            </q-scroll-area>
+        </q-card>
+        <q-card>
+            <h4>Images without tumor</h4>
+            <q-scroll-area id="i701x">
+                <div id="ig3ho">
+                    <q-card v-for="img in img_no" id="izye4">
+                        <q-img v-on:click="clicked_img = '/no/'+img" id="irpgg" src="'/no/'+img"></q-img>
+                    </q-card>
+                </div>
+            </q-scroll-area>
+        </q-card>
+    </div>
+    <div id="ijz4j">
+        <q-card id="ii1zr">
+            <h4>Network propagation</h4>
+            <q-img id="i0csh" :src="animation_url"></q-img>
+        </q-card>
+        <q-card id="iqg79">
+            <h4>Classification result:</h4>
+            {{label}}
+            <h4>Ground truth:</h4>
+            {{ground_truth}}<br>
+            <q-badge v-if="classification_error" id="ibn5g" color="red">
+                <q-icon id="i7ijd" name="warning" size="15px"></q-icon>
+                Classification error!
+            </q-badge>
+        </q-card>
+    </div>
+</div>
