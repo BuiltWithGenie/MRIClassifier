@@ -97,7 +97,7 @@ end
 
 function ui()
     [
-     h1(class="my-4 text-center", "Brain tumor classifier"),
+     h1(class="my-4 text-center", "Brain MRI classifier"),
      h2("Training"),
      Html.div(style="display:flex", 
               [
