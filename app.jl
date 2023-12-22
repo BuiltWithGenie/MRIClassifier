@@ -1,5 +1,6 @@
 module App
-using GenieFramework, PlotlyBase, Random, ImageIO, FileIO, Colors, Statistics, FixedPointNumbers, JLD2
+using GenieFramework, PlotlyBase, Random,  FileIO, Colors, Statistics, FixedPointNumbers, JLD2
+@genietools
 include("utils.jl")
 #= model = create_model() =#
 @load "public/model.jld2" model
@@ -7,6 +8,10 @@ include("utils.jl")
 all_yes, all_no = load_and_process_images(YESPATH), load_and_process_images(NOPATH)
 img_yes = readdir(YESPATH)[1:10]
 img_no = readdir(NOPATH)[1:10]
+
+const disable_train = (haskey(ENV, "GENIE_ENV") && ENV["GENIE_ENV"] == "prod") ? "true" : "false"
+const button_color = disable_train == "true" ? "grey" : "grey"
+const button_tooltip = disable_train == "true" ? tooltip("Run the app locally to enable this button") : ""
 
 @app begin
     @in training = false
@@ -72,7 +77,6 @@ img_no = readdir(NOPATH)[1:10]
         for l in 1:L
             normalized_layer = abs.(image_layers[l][:,:,1,1] ./ maximum(image_layers[l][:,:,1,1]) )
             px = size(normalized_layer,1)
-            @show px
             if px > IMAGE_SIZE[1]
                 break
             end
@@ -83,7 +87,7 @@ img_no = readdir(NOPATH)[1:10]
             end_x = start_x + px - 1
             frames[start_x:end_x,start_x:end_x,l] = rgb_img
         end
-        save("public/animation.gif", frames; fps=1)
+        save("public/animation.gif", frames, fps=1.2)
         animation_url = ""
         sleep(0.1)
         animation_url = "/animation.gif?v=$(Base.time())"
@@ -104,7 +108,7 @@ function ui()
                                                                                      p("Test accuracy: {{test_acc}}"),
                                                     ]),
                                                 card(style="display:flex;", [
-                                                                                     btn("Train model", @click(:training), loading=:training,color="primary"),
+                                                                             btn("Train model", @click(:training), loading=:training,color=button_color, disable=disable_train, [button_tooltip]),
                                                                                      btn("Download model", href="/model.jld2", color="primary", class="q-ml-md"),
                                                                                      btn("Download data", href="/archive.zip", color="primary", class="q-ml-md"),
                                                                                     ]),
@@ -164,5 +168,5 @@ function ui()
    ]
 end
 
-@page("/", "app.jl.html")
+@page("/", ui)
       end
