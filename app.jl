@@ -12,6 +12,7 @@ img_no = readdir(NOPATH)[1:10]
 const disable_train = (haskey(ENV, "GENIE_ENV") && ENV["GENIE_ENV"] == "prod") ? "true" : "false"
 const button_color = disable_train == "true" ? "grey" : "grey"
 const button_tooltip = disable_train == "true" ? tooltip("Run the app locally to enable this button") : ""
+const basepath = (haskey(ENV, "GENIE_ENV") && ENV["GENIE_ENV"] == "prod") ? "/mri" : ""
 
 @app begin
     @in training = false
@@ -26,7 +27,7 @@ const button_tooltip = disable_train == "true" ? tooltip("Run the app locally to
     @out images = []
     @in clicked_img = ""
     @out image_layers = []
-    @out animation_url = "/animation.gif"
+    @out animation_url = basepath*"/animation.gif"
     @out img_yes = img_yes
     @out img_no = img_no
     @out label = "???"
@@ -90,7 +91,7 @@ const button_tooltip = disable_train == "true" ? tooltip("Run the app locally to
         save("public/animation.gif", frames, fps=1.2)
         animation_url = ""
         sleep(0.1)
-        animation_url = "/animation.gif?v=$(Base.time())"
+        animation_url = basepath*"/animation.gif?v=$(Base.time())"
     end
 end
 
@@ -121,7 +122,7 @@ function ui()
                     p("To train the network, click the TRAIN button. This button only works when running the app locally in development mode."),
                     p("To test the trained classifier, click one of the images below. You'll see the output of each layer of the network as the image is processed. The final layer output is used to classify the image as having a tumor or not."),
                      h4("Network diagram"),
-                     img(style="width:600px;height:200px;",src="/diagram.png"),
+                     img(style="width:600px;height:200px;",src="$(basepath)/diagram.png"),
                      p("This diagram excludes pooling and normalization layers")])
 
               ]),
@@ -136,7 +137,7 @@ function ui()
                                                    [
                                                     Html.div(style="display:flex",
                                                              [
-                                                              card(style="background:orange;padding:5px", @recur("img in img_yes"),imageview(style="width:120px;height:120px;cursor:pointer",var":src"="'/yes/'+img", @on(:click,"clicked_img = '/yes/'+img"))),
+                                                              card(style="background:orange;padding:5px", @recur("img in img_yes"),imageview(style="width:120px;height:120px;cursor:pointer",var":src"="'$(basepath)/yes/'+img", @on(:click,"clicked_img = '/yes/'+img"))),
                                                              ]),
                                                    ])
                                        ]),
@@ -146,7 +147,7 @@ function ui()
                                        [
                                         Html.div(style="display:flex",
                                                  [
-                                                  card(style="background:green;padding:5px",@recur("img in img_no"),imageview(style="width:120px;height:120px;cursor:pointer",var":src"="'/no/'+img", @on(:click,"clicked_img = '/no/'+img"))),
+                                                  card(style="background:green;padding:5px",@recur("img in img_no"),imageview(style="width:120px;height:120px;cursor:pointer",var":src"="'$(basepath)/no/'+img", @on(:click,"clicked_img = '/no/'+img"))),
                                                  ]),
                                        ])
                            ]),
