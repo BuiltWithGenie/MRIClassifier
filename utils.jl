@@ -5,17 +5,14 @@ using Flux: BatchNorm, Chain, Conv, Dense, MaxPool, relu, SamePad
 using MLUtils: flatten
 using Random: seed!
 
-# Constants and File Paths
 const DATAPATH = "public/"
 const YESPATH = joinpath(DATAPATH, "yes")
 const NOPATH = joinpath(DATAPATH, "no")
 const IMAGE_SIZE = (80, 80)
 const FRAC_TEST = 0.2
 
-# Function to filter out non-image files
 filt_macos(x) = x != ".DS_Store"
 
-# Function to load and process images
 function load_and_process_images(dir)
     files = filter(filt_macos, readdir(dir))
     map(files) do file
@@ -23,16 +20,13 @@ function load_and_process_images(dir)
     end
 end
 
-# Function to split data into training and test sets
 function split_data(data)
     ntest = round(Int, length(data) * FRAC_TEST)
     data[1:ntest], data[ntest+1:end]
 end
 
-# Function to format data for Flux
 format_data = x -> cat(x...; dims=ndims(x[1]) + 2)
 
-# Function to create the model
 function create_model()
     seed!(0)
     filter_size, downsample_factor, num_downsamples = (3, 3), (2, 2), 3
@@ -60,13 +54,10 @@ function get_layer_outputs(model, input)
     outputs
 end
 
-# Function to classify input
 classify(model, input) = sigmoid(model(input)) .> 0.5
 
-# Function to compute model accuracy
 compute_accuracy(model, input, labels) = count(classify(model, input) .== labels) / length(labels)
 
-# Function to train the model
 function train_model(model, train_data, train_labels, test_data, test_labels)
     opt_state = setup(Adam(), model)
     log = []
